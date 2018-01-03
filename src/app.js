@@ -1,15 +1,22 @@
-import express from 'express'
-import logger from 'morgan'
 import bodyParser from 'body-parser'
+import express from 'express'
+import graphqlHTTP from 'express-graphql'
+import logger from 'morgan'
 
 const app = express()
 
-if (JSON.stringify(process.env.NODE_ENV) === 'development')
+const isDevelop = process.env.NODE_ENV === 'development'
+
+if (isDevelop)
   app.use(logger('dev'))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.get('*', (req, res) => res.sendStatus(200))
+app.use('/graphql', graphqlHTTP({
+  graphiql: isDevelop
+}))
+
+app.get('/', (req, res) => res.sendStatus(200))
 
 module.exports = app

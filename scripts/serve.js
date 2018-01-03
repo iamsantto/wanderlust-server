@@ -1,11 +1,14 @@
+import dotenv from 'dotenv'
 import http from 'http'
 import open from 'open'
 
 import app from '../src/app'
 
-const isProduction = (JSON.stringify(process.env.NODE_ENV) === 'production'),
-  PORT = parseInt(process.env.PORT) || 8080,
-  ASSET_HOST = JSON.stringify(process.env.ASSET_HOST)
+if (process.env.NODE_ENV !== 'production') dotenv.config()
+
+const isDevelop = process.env.NODE_ENV === 'development',
+  PORT = process.env.PORT,
+  ASSET_HOST = process.env.ASSET_HOST
 
 app.set('port', PORT)
 
@@ -14,10 +17,9 @@ server.listen(PORT, err => {
   if (err)
     console.log(err)
 
-  if (isProduction)
-    console.log('App is deployed to: ', ASSET_HOST)
-  else {
+  if (isDevelop) {
     console.log('Server running on port: ', PORT)
     open('http://localhost:' + PORT)
-  }
+  } else
+    console.log('App is deployed to: ', ASSET_HOST)
 })
